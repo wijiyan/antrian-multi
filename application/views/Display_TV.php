@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Display Antrian</title>
+    <meta charset="UTF-8">
+    <title>Display Antrian</title>
 
-<style>
-:root {
-    --primary: #1e88e5;
-    --accent: #ffca28;
-    --bg-day: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    --bg-night: linear-gradient(135deg,#000000,#121212);
-}
+    <style>
+        :root {
+            --primary: #1e88e5;
+            --accent: #ffca28;
+            --bg-day: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+            --bg-night: linear-gradient(135deg,#000000,#121212);
+        }
 
 /* MODE MALAM */
 body.night {
@@ -32,8 +32,8 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 40px;
     background: rgba(0,0,0,0.35);
+    padding: clamp(15px, 2vw, 40px) clamp(20px, 3vw, 60px);
 }
 
 header .left {
@@ -47,12 +47,12 @@ header img {
 }
 
 header .title {
-    font-size: 36px;
+    font-size: clamp(22px, 2.2vw, 40px);
     font-weight: bold;
 }
 
 header .clock {
-    font-size: 32px;
+    font-size: clamp(18px, 1.8vw, 34px);
 }
 
 /* MAIN CENTER */
@@ -66,15 +66,15 @@ main {
 /* CARD TENGAH */
 .card {
     background: rgba(255,255,255,0.08);
-    border-radius: 35px;
-    padding: 70px 120px;
     text-align: center;
     box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+    padding: clamp(40px, 4vw, 120px);
+    border-radius: clamp(20px, 3vw, 40px);
 }
 
 /* LABEL */
 .label {
-    font-size: 42px;
+    font-size: clamp(26px, 2.4vw, 48px);
     opacity: 0.9;
 }
 
@@ -87,7 +87,7 @@ main {
 }
 
 .loket {
-    font-size: 90px;
+    font-size: clamp(48px, 5vw, 110px);
     font-weight: bold;
 }
 
@@ -122,38 +122,115 @@ main {
     0% { transform: translateX(0); }
     100% { transform: translateX(-100%); }
 }
+
+/* SPLIT LAYOUT */
+.main-wrap {
+    flex: 1;
+    display: flex;
+}
+
+/* VIDEO */
+.video-box {
+    width: 40%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: clamp(20px, 2vw, 50px); /* ⬅️ JARAK DARI KIRI */
+    box-sizing: border-box;
+}
+
+.video-box video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: clamp(12px, 1.5vw, 28px);          /* opsional: biar halus */
+}
+
+/* INFO */
+.info-box {
+    width: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* STATUS KODE */
+.kode-status {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    font-size: 36px;
+}
+
+.kode-status span {
+    opacity: 0.85;
+}
+
+.kode-status b {
+    color: var(--accent);
+}
+
+@media (min-width: 3000px) {
+    body {
+        zoom: 1.15; /* aman untuk Chrome kiosk */
+    }
+}
+
 </style>
 </head>
 
 <body>
 
-<header>
-    <div class="left">
-        <img src="<?= base_url('assets/logo_puskesmas.png') ?>" alt="Logo">
-        <div class="title"><?= $this->config->item('puskesmas_nama') ?></div>
-    </div>
-    <div class="clock" id="clock">--:--</div>
-</header>
+    <header>
+        <div class="left">
+            <img src="<?= base_url('assets/logo_puskesmas.png') ?>" alt="Logo">
+            <div class="title"><?= $this->config->item('puskesmas_nama') ?></div>
+        </div>
+        <div class="clock" id="clock">--:--</div>
+    </header>
 
-<main>
-    <div class="card">
-        <div class="label">ANTRIAN SEDANG DIPANGGIL</div>
-        <div class="nomor" id="nomor">-</div>
-        <div class="loket" id="loket">LOKET -</div>
-    </div>
-</main>
+    <div class="main-wrap">
 
-<div class="running">
-    <span>
-        <?= $this->config->item('puskesmas_running') ?>
-    </span>
-</div>
+        <!-- VIDEO EDUKASI -->
+        <div class="video-box">
+            <video autoplay muted loop>
+                <source src="<?= base_url('assets/video/edukasi.mp4') ?>" type="video/mp4">
+                </video>
+            </div>
 
-<script>
+            <!-- INFO ANTRIAN -->
+            <div class="info-box">
+                <div class="card">
+                    <div class="label">ANTRIAN SEDANG DIPANGGIL</div>
+                    <div class="nomor" id="nomor">-</div>
+                    <div class="loket" id="loket">LOKET -</div>
+
+                    <!-- STATUS A B C -->
+                    <div class="kode-status">
+                        <span>A : <b id="kodeA">-</b></span>
+                        <span>B : <b id="kodeB">-</b></span>
+                        <span>C : <b id="kodeC">-</b></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="running">
+            <span>
+                <?= $this->config->item('puskesmas_running') ?>
+            </span>
+        </div>
+
+        <script>
 /* ======================
    JAM & MODE MALAM
-====================== */
-function updateClock(){
+   ====================== */
+   function updateClock(){
     let now = new Date();
     let h = now.getHours();
     let m = String(now.getMinutes()).padStart(2,'0');
@@ -170,11 +247,11 @@ updateClock();
 
 /* ======================
    AUDIO QUEUE
-====================== */
-const BASE_AUDIO = "<?= base_url('assets/audio/') ?>";
-let sedangPutar = false;
+   ====================== */
+   const BASE_AUDIO = "<?= base_url('assets/audio/') ?>";
+   let sedangPutar = false;
 
-function playAudio(file, cb){
+   function playAudio(file, cb){
     let a = new Audio(BASE_AUDIO + file);
     a.play();
     a.onended = cb;
@@ -198,41 +275,56 @@ function playList(list,i,done){
     playAudio(list[i],()=>playList(list,i+1,done));
 }
 
-function panggilSuara(nomor,loket,done){
-    let p=[];
+/* PANGGIL SUARA (SUPPORT KODE) */
+function panggilSuara(kode, nomor, loket, done){
+    let p = [];
+
     p.push("pembuka/bell.mp3");
     p.push("pembuka/nomor_antrian.mp3");
-    angkaKeAudio(nomor).forEach(f=>p.push("angka/"+f));
+
+    // sebut kode (A/B/C)
+    p.push("kode/" + kode + ".mp3");
+
+    // sebut angka
+    angkaKeAudio(nomor).forEach(f => p.push("angka/" + f));
+
     p.push("penutup/silakan_menuju_loket_pendaftaran.mp3");
-    p.push("loket/"+loket+".mp3");
-    playList(p,0,done);
+    p.push("loket/" + loket + ".mp3");
+
+    playList(p, 0, done);
 }
 
 /* ======================
    CEK QUEUE
-====================== */
-function cekQueue(){
+   ====================== */
+   function cekQueue(){
     if(sedangPutar) return;
 
     fetch("<?= base_url('display/audio_next') ?>")
-    .then(r=>r.json())
-    .then(d=>{
-        if(d){
-            sedangPutar=true;
+    .then(r => r.json())
+    .then(d => {
+        if(!d) return;
 
-            // document.getElementById('nomor').innerHTML=d.nomor;
-            document.getElementById('nomor').innerHTML = d.kode + "-" + String(d.nomor).padStart(3,'0');
-            document.getElementById('loket').innerHTML="LOKET "+d.loket;
-            document.getElementById('nomor').classList.add('flash');
+        sedangPutar = true;
 
-            panggilSuara(d.nomor,d.loket,()=>{
-                sedangPutar=false;
-                document.getElementById('nomor').classList.remove('flash');
-            });
-        }
+        // TAMPILAN
+        document.getElementById('nomor').innerHTML =
+        d.kode + "-" + String(d.nomor).padStart(3,'0');
+
+        document.getElementById('loket').innerHTML =
+        "LOKET " + d.loket;
+
+        // AUDIO
+        panggilSuara(d.kode, d.nomor, d.loket, () => {
+            sedangPutar = false;
+        });
+    })
+    .catch(() => {
+        sedangPutar = false;
     });
 }
-setInterval(cekQueue,800);
+
+setInterval(cekQueue, 800);
 
 function playAudio(file, cb){
     let a = new Audio(BASE_AUDIO + file);
@@ -253,6 +345,27 @@ function playAudio(file, cb){
         }
     }, 5000); // fallback
 }
+
+/* ======================
+   STATUS A B C
+====================== */
+function cekStatusKode(){
+    fetch("<?= base_url('display/status_kode') ?>")
+    .then(r => r.json())
+    .then(d => {
+        if(!d) return;
+        document.getElementById('kodeA').innerHTML =
+            d.A ? String(d.A).padStart(3,'0') : '-';
+        document.getElementById('kodeB').innerHTML =
+            d.B ? String(d.B).padStart(3,'0') : '-';
+        document.getElementById('kodeC').innerHTML =
+            d.C ? String(d.C).padStart(3,'0') : '-';
+    });
+}
+
+setInterval(cekStatusKode, 2000);
+cekStatusKode();
+
 
 </script>
 

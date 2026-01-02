@@ -10,32 +10,10 @@ class Loket extends CI_Controller {
     }
 
     /* ===============================
-       HALAMAN PILIH LOKET
-    =============================== */
-    /**
-     * Halaman loket
-     * contoh akses:
-     * /loket/index/1
-     * /loket/index/2
-     * /loket/index/3
-     */
-    public function index($loket = null)
-    {
-        if ($loket === null) {
-        // halaman pilih loket
-            $this->load->view('loket_pilih');
-        } else {
-        // halaman loket aktif
-            $data['loket'] = (int)$loket;
-            $this->load->view('loket', $data);
-        }
-    }
-
-    /* ===============================
        HALAMAN LOKET TERTENTU
-       contoh: /loket/buka/1
+       contoh: /loket/index/1
     =============================== */
-    public function buka($loket)
+    public function index($loket)
     {
         $data['loket'] = (int)$loket;
         $this->load->view('loket', $data);

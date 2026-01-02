@@ -40,4 +40,26 @@ class Display extends CI_Controller {
 
         echo json_encode($q);
     }
+
+    public function status_kode()
+    {
+        $today = date('Y-m-d');
+        $result = ['A'=>null,'B'=>null,'C'=>null];
+
+        foreach(['A','B','C'] as $k){
+            $row = $this->db
+            ->where([
+                'kode'=>$k,
+                'tanggal'=>$today
+            ])
+            ->order_by('nomor','DESC')
+            ->get('antrian')
+            ->row();
+
+            if($row) $result[$k] = $row->nomor;
+        }
+
+        echo json_encode($result);
+    }
+
 }

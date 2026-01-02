@@ -36,21 +36,39 @@ h1{
 }
 
 /* KODE */
-.kode-group{
-    display:flex;
-    justify-content:center;
-    gap:14px;
-    margin-bottom:25px;
+.kode-group {
+    display: flex;
+    justify-content: center;
+    gap: 26px;
+    margin-bottom: 30px;
 }
 
-.btn-kode{
-    padding:12px 22px;
-    font-size:20px;
-    border-radius:14px;
-    border:none;
-    cursor:pointer;
-    background:#455a64;
-    color:#fff;
+.kode-item {
+    text-align: center;
+}
+
+.btn-kode {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    font-size: 26px;
+    font-weight: bold;
+    background: #455a64;
+    color: #fff;
+}
+
+.btn-kode.active {
+    background: #ffd23c;
+    color: #000;
+}
+
+.kode-label {
+    margin-top: 6px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    opacity: 0.85;
 }
 
 .btn-kode.active{
@@ -108,11 +126,24 @@ button.action{
     <div class="subtitle">Panggilan Antrian</div>
 
     <!-- PILIH KODE -->
-    <div class="kode-group">
+<div class="kode-group">
+
+    <div class="kode-item">
         <button class="btn-kode active" onclick="pilihKode('A',this)">A</button>
-        <button class="btn-kode" onclick="pilihKode('B',this)">B</button>
-        <button class="btn-kode" onclick="pilihKode('C',this)">C</button>
+        <div class="kode-label">UMUM</div>
     </div>
+
+    <div class="kode-item">
+        <button class="btn-kode" onclick="pilihKode('B',this)">B</button>
+        <div class="kode-label">BPJS</div>
+    </div>
+
+    <div class="kode-item">
+        <button class="btn-kode" onclick="pilihKode('C',this)">C</button>
+        <div class="kode-label">LANSIA</div>
+    </div>
+
+</div>
 
     <div class="nomor" id="nomor">-</div>
 
