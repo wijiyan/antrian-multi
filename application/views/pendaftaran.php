@@ -224,7 +224,7 @@ function ambilAntrian(){
         fetch("<?= base_url('pendaftaran/ambil/') ?>" + kode)
         .then(res => res.json())
         .then(data => {
-            alert("Nomor Anda: " + data.kode + "-" + data.nomor);
+            // alert("Nomor Anda: " + data.kode + "-" + data.nomor);
 
             // cetak
             window.open(

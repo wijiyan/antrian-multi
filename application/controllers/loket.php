@@ -12,18 +12,18 @@ class Loket extends CI_Controller {
     /* ===============================
        HALAMAN LOKET TERTENTU
        contoh: /loket/index/1
-    =============================== */
-    public function index($loket)
-    {
+       =============================== */
+       public function index($loket)
+       {
         $data['loket'] = (int)$loket;
         $this->load->view('loket', $data);
     }
 
     /* ===============================
        PANGGIL ANTRIAN (AJAX)
-    =============================== */
-    public function panggil()
-    {
+       =============================== */
+       public function panggil()
+       {
         $input = json_decode(file_get_contents("php://input"), true);
 
         $loket = (int)$input['loket'];
@@ -32,14 +32,14 @@ class Loket extends CI_Controller {
 
         // Ambil antrian terlama sesuai kode
         $antrian = $this->db
-            ->where([
-                'kode'    => $kode,
-                'tanggal' => $today,
-                'status'  => 'menunggu'
-            ])
-            ->order_by('nomor', 'ASC')
-            ->get('antrian')
-            ->row();
+        ->where([
+            'kode'    => $kode,
+            'tanggal' => $today,
+            'status'  => 'menunggu'
+        ])
+        ->order_by('nomor', 'ASC')
+        ->get('antrian')
+        ->row();
 
         if (!$antrian) {
             echo json_encode([
@@ -51,10 +51,10 @@ class Loket extends CI_Controller {
 
         // Update status antrian
         $this->db->where('id', $antrian->id)
-                 ->update('antrian', [
-                     'status' => 'dipanggil',
-                     'loket'  => $loket
-                 ]);
+        ->update('antrian', [
+           'status' => 'dipanggil',
+           'loket'  => $loket
+       ]);
 
         // Masukkan ke audio_queue
         $this->db->insert('audio_queue', [
@@ -72,9 +72,9 @@ class Loket extends CI_Controller {
 
     /* ===============================
        PANGGIL ULANG
-    =============================== */
-    public function ulang()
-    {
+       =============================== */
+       public function ulang()
+       {
         $input = json_decode(file_get_contents("php://input"), true);
 
         $loket = (int)$input['loket'];
@@ -82,14 +82,14 @@ class Loket extends CI_Controller {
 
         // Ambil terakhir dipanggil di loket ini
         $antrian = $this->db
-            ->where([
-                'loket'  => $loket,
-                'kode'   => $kode,
-                'status' => 'dipanggil'
-            ])
-            ->order_by('id', 'DESC')
-            ->get('antrian')
-            ->row();
+        ->where([
+            'loket'  => $loket,
+            'kode'   => $kode,
+            'status' => 'dipanggil'
+        ])
+        ->order_by('id', 'DESC')
+        ->get('antrian')
+        ->row();
 
         if (!$antrian) {
             echo json_encode([
@@ -112,4 +112,23 @@ class Loket extends CI_Controller {
             'nomor'  => $antrian->nomor
         ]);
     }
+
+    public function sisa_antrian()
+    {
+        $today = date('Y-m-d');
+        $hasil = [];
+
+        foreach(['A','B','C'] as $kode){
+            $hasil[$kode] = $this->db
+            ->where([
+                'kode' => $kode,
+                'tanggal' => $today,
+                'status' => 'menunggu'
+            ])
+            ->count_all_results('antrian');
+        }
+
+        echo json_encode($hasil);
+    }
+
 }

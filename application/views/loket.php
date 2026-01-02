@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Loket <?= $loket ?></title>
+    <meta charset="UTF-8">
+    <title>Loket <?= $loket ?></title>
 
-<style>
-body{
-    margin:0;
-    height:100vh;
-    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    font-family:"Segoe UI",Arial,sans-serif;
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
+    <style>
+        body{
+            margin:0;
+            height:100vh;
+            background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+            font-family:"Segoe UI",Arial,sans-serif;
+            color:#fff;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
 
-.card{
-    background:rgba(255,255,255,0.08);
-    border-radius:30px;
-    padding:50px 60px;
-    text-align:center;
-    box-shadow:0 20px 50px rgba(0,0,0,0.45);
-    width:460px;
-}
+        .card{
+            background:rgba(255,255,255,0.08);
+            border-radius:30px;
+            padding:50px 60px;
+            text-align:center;
+            box-shadow:0 20px 50px rgba(0,0,0,0.45);
+            width:460px;
+        }
 
-h1{
-    margin:0;
-    font-size:32px;
-}
+        h1{
+            margin:0;
+            font-size:32px;
+        }
 
-.subtitle{
-    opacity:.8;
-    margin-bottom:25px;
-}
+        .subtitle{
+            opacity:.8;
+            margin-bottom:25px;
+        }
 
 /* KODE */
 .kode-group {
@@ -116,97 +116,128 @@ button.action{
     font-size:16px;
     opacity:.85;
 }
+
+.kode-sisa {
+    margin-top: 4px;
+    font-size: 12px;
+    opacity: 0.75;
+    letter-spacing: 0.5px;
+}
+
+.kode-sisa b {
+    font-size: 14px;
+    color: #ffd23c;
+}
 </style>
 </head>
 
 <body>
 
-<div class="card">
-    <h1>LOKET <?= $loket ?></h1>
-    <div class="subtitle">Panggilan Antrian</div>
+    <div class="card">
+        <h1>LOKET <?= $loket ?></h1>
+        <div class="subtitle">Panggilan Antrian</div>
 
-    <!-- PILIH KODE -->
-<div class="kode-group">
+        <!-- PILIH KODE -->
+        <div class="kode-group">
 
-    <div class="kode-item">
-        <button class="btn-kode active" onclick="pilihKode('A',this)">A</button>
-        <div class="kode-label">UMUM</div>
+            <div class="kode-item">
+                <button class="btn-kode active" onclick="pilihKode('A',this)">A</button>
+                <div class="kode-label">UMUM</div>
+                <div class="kode-sisa">SISA <b id="sisaA">-</b></div>
+            </div>
+
+            <div class="kode-item">
+                <button class="btn-kode" onclick="pilihKode('B',this)">B</button>
+                <div class="kode-label">BPJS</div>
+                <div class="kode-sisa">SISA <b id="sisaB">-</b></div>
+            </div>
+
+            <div class="kode-item">
+                <button class="btn-kode" onclick="pilihKode('C',this)">C</button>
+                <div class="kode-label">LANSIA</div>
+                <div class="kode-sisa">SISA <b id="sisaC">-</b></div>
+            </div>
+
+        </div>
+
+        <div class="nomor" id="nomor">-</div>
+
+        <div class="buttons">
+            <button class="action btn-panggil" onclick="panggil()">PANGGIL</button>
+            <button class="action btn-ulang" onclick="ulang()">ULANG</button>
+        </div>
+
+        <div class="status" id="status">Menunggu aksi...</div>
     </div>
 
-    <div class="kode-item">
-        <button class="btn-kode" onclick="pilihKode('B',this)">B</button>
-        <div class="kode-label">BPJS</div>
-    </div>
+    <script>
+        let KODE  = 'A';
+        const LOKET = <?= (int)$loket ?>;
 
-    <div class="kode-item">
-        <button class="btn-kode" onclick="pilihKode('C',this)">C</button>
-        <div class="kode-label">LANSIA</div>
-    </div>
-
-</div>
-
-    <div class="nomor" id="nomor">-</div>
-
-    <div class="buttons">
-        <button class="action btn-panggil" onclick="panggil()">PANGGIL</button>
-        <button class="action btn-ulang" onclick="ulang()">ULANG</button>
-    </div>
-
-    <div class="status" id="status">Menunggu aksi...</div>
-</div>
-
-<script>
-let KODE  = 'A';
-const LOKET = <?= (int)$loket ?>;
-
-function pilihKode(kode,el){
-    KODE = kode;
-    document.querySelectorAll('.btn-kode')
-        .forEach(b=>b.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function panggil(){
-    setStatus("Memanggil antrian...");
-    fetch("<?= base_url('loket/panggil') ?>",{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({loket:LOKET,kode:KODE})
-    })
-    .then(r=>r.json())
-    .then(d=>{
-        if(d.status){
-            document.getElementById('nomor').innerHTML =
-                d.kode + '-' + String(d.nomor).padStart(3,'0');
-            setStatus("Antrian dipanggil");
-        }else{
-            setStatus(d.message);
+        function pilihKode(kode,el){
+            KODE = kode;
+            document.querySelectorAll('.btn-kode')
+            .forEach(b=>b.classList.remove('active'));
+            el.classList.add('active');
         }
-    });
-}
 
-function ulang(){
-    setStatus("Panggil ulang...");
-    fetch("<?= base_url('loket/ulang') ?>",{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({loket:LOKET,kode:KODE})
-    })
-    .then(r=>r.json())
-    .then(d=>{
-        if(d.status){
-            document.getElementById('nomor').innerHTML =
-                d.kode + '-' + String(d.nomor).padStart(3,'0');
-            setStatus("Panggil ulang dikirim");
-        }else{
-            setStatus(d.message);
+        function panggil(){
+            setStatus("Memanggil antrian...");
+            fetch("<?= base_url('loket/panggil') ?>",{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({loket:LOKET,kode:KODE})
+            })
+            .then(r=>r.json())
+            .then(d=>{
+                if(d.status){
+                    document.getElementById('nomor').innerHTML =
+                    d.kode + '-' + String(d.nomor).padStart(3,'0');
+                    setStatus("Antrian dipanggil");
+                }else{
+                    setStatus(d.message);
+                }
+            });
         }
-    });
-}
 
-function setStatus(txt){
-    document.getElementById('status').innerHTML = txt;
-}
+        function ulang(){
+            setStatus("Panggil ulang...");
+            fetch("<?= base_url('loket/ulang') ?>",{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({loket:LOKET,kode:KODE})
+            })
+            .then(r=>r.json())
+            .then(d=>{
+                if(d.status){
+                    document.getElementById('nomor').innerHTML =
+                    d.kode + '-' + String(d.nomor).padStart(3,'0');
+                    setStatus("Panggil ulang dikirim");
+                }else{
+                    setStatus(d.message);
+                }
+            });
+        }
+
+        function setStatus(txt){
+            document.getElementById('status').innerHTML = txt;
+        }
+
+        function cekSisaAntrian(){
+            fetch("<?= base_url('loket/sisa_antrian') ?>")
+            .then(r => r.json())
+            .then(d => {
+                if(!d) return;
+                document.getElementById('sisaA').innerHTML = d.A ?? 0;
+                document.getElementById('sisaB').innerHTML = d.B ?? 0;
+                document.getElementById('sisaC').innerHTML = d.C ?? 0;
+            });
+        }
+
+        setInterval(cekSisaAntrian, 3000);
+        cekSisaAntrian();
+    </script>
+
 </script>
 
 </body>
